@@ -1,7 +1,7 @@
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponseRedirect
 
-from products.models import ProductsCategory, Product
+from products.models import ProductsCategory, Product, Basket
 
 
 def index(request: HttpRequest) -> HttpResponse:
@@ -18,3 +18,22 @@ def products(request: HttpRequest) -> HttpResponse:
         'categories': ProductsCategory.objects.all()
     }
     return render(request, 'products/products.html', context)
+
+
+def basket_add(request: HttpRequest, product_id: int) -> HttpResponse:  # TODO: поменять на ManyToMany
+    product = Product.objects.get(id=product_id)
+    basket_item = Basket.objects.filter(user=request.user, product=product).first()
+
+    if not basket_item:
+        Basket.objects.create(user=request.user, product=product, quantity=1)
+    else:
+        basket_item.quantity += 1
+        basket_item.save()
+
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+
+def basket_remove(request: HttpRequest, basket_id: int) -> HttpResponse:
+    basket_item = Basket.objects.get(id=basket_id)
+    basket_item.delete()
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
