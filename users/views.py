@@ -37,6 +37,7 @@ def registration(request: HttpRequest) -> HttpResponse:
 
 
 def profile(request: HttpRequest) -> HttpResponse:
+    # TODO: бахнуть API для реактивного обновления корзины
     if request.method == 'POST':
         form = UserProfileForm(instance=request.user, data=request.POST, files=request.FILES)
         print(request.FILES)
@@ -47,6 +48,7 @@ def profile(request: HttpRequest) -> HttpResponse:
             print(form.errors)
     else:
         form = UserProfileForm(instance=request.user)
+
     context = {
         'title': 'Store - Профиль',
         'form': form,
