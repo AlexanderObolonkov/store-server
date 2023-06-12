@@ -15,7 +15,8 @@
                 <h1 class="my-4">Store</h1>
                 <div class="list-group">
                     {% for category in categories %}
-                        <a href="{% url 'products:category' category.id %}" class="list-group-item">
+                        <a href="{% url 'products:category_paginator' category_id=category.id page_number=1 %}"
+                           class="list-group-item">
                             {{ category.name }}
                         </a>
                     {% endfor %}
@@ -87,14 +88,26 @@
 
                 <nav aria-label="Page navigation example">
                     <ul class="pagination justify-content-center">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                        <li class="page-item {% if not products.has_previous %} disabled {% endif %}">
+                            <a class="page-link"
+                               href="{% if products.has_previous %} {% url 'products:paginator' products.previous_page_number %} {% else %} # {% endif %}"
+                               tabindex="-1" aria-disabled="true">
+                                Предыдущая
+                            </a>
                         </li>
-                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">Next</a>
+                        {% for page in products.paginator.page_range %}
+                            <li class="page-item {% if page == page_number %} active {% endif %}">
+                                <a class="page-link"
+                                   href="{% url 'products:category_paginator' category_id=selected_cat page_number=page %}">
+                                    {{ page }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                        <li class="page-item {% if not products.has_next %} disabled {% endif %}">
+                            <a class="page-link"
+                               href="{% if products.has_next %} {% url 'products:paginator' products.next_page_number %} {% else %} # {% endif %}">
+                                Следующая
+                            </a>
                         </li>
                     </ul>
                 </nav>
@@ -107,7 +120,7 @@
 {% endblock %}
 
 {% block footer %}
-    <footer class="py-5 bg-dark">
+    <footer class="footer mt-auto py-5 bg-dark">
         <div class="container">
             <p class="m-0 text-center text-white">Copyright &copy; Store 2023</p>
         </div>
