@@ -1,10 +1,10 @@
 from typing import Any
 
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render, HttpResponseRedirect
+from django.shortcuts import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
 from django.views.generic.base import TemplateView
+from django.views.generic.list import ListView
 
 from products.models import ProductsCategory, Product, Basket
 
@@ -13,26 +13,27 @@ class IndexView(TemplateView):
     template_name = 'products/index.html'
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
-        context = super(IndexView, self).get_context_data()
+        context = super().get_context_data()
         context['title'] = 'Store'
         return context
 
 
-def products(request: HttpRequest, category_id: int = 0, page_number: int = 1) -> HttpResponse:
-    products = Product.objects.filter(category_id=category_id) if category_id else Product.objects.all()
+class ProductsListView(ListView):
+    model = Product
+    template_name = 'products/products.html'
+    context_object_name = 'products'
+    paginate_by = 3
 
-    per_page = 3
-    paginator = Paginator(products, per_page)
-    products_paginator = paginator.page(page_number)
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        category_id = self.kwargs.get('category_id')
+        return queryset.filter(category_id=category_id) if category_id else queryset
 
-    context = {
-        'title': 'Store - Каталог',
-        'products': products_paginator,
-        'categories': ProductsCategory.objects.all(),
-        'page_number': page_number,
-        'selected_cat': category_id,
-    }
-    return render(request, 'products/products.html', context)
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        context = super().get_context_data()
+        context['title'] = 'Store - Каталог'
+        context['categories'] = ProductsCategory.objects.all()
+        return context
 
 
 @login_required
