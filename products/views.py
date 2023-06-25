@@ -1,5 +1,6 @@
 from typing import Any
 
+from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
@@ -22,7 +23,7 @@ class ProductsListView(TitleMixin, ListView):
     paginate_by = 3
     title = 'Store - Каталог'
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet:
         queryset = super().get_queryset()
         category_id = self.kwargs.get('category_id')
         return queryset.filter(category_id=category_id) if category_id else queryset
