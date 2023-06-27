@@ -22,4 +22,4 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run flake8
-        run: run flake8 .
+        run: flake8 .
