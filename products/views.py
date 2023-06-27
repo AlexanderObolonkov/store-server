@@ -1,14 +1,14 @@
 from typing import Any
 
+from django.contrib.auth.decorators import login_required
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import HttpResponseRedirect
-from django.contrib.auth.decorators import login_required
 from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
 
-from products.models import ProductsCategory, Product, Basket
 from common.views import TitleMixin
+from products.models import Basket, Product, ProductsCategory
 
 
 class IndexView(TitleMixin, TemplateView):
