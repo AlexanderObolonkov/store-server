@@ -5,6 +5,6 @@ repos:
       - id: isort
         name: isort (python)
   - repo: https://github.com/pycqa/flake8
-    rev: ''  # pick a git hash / tag to point to
+    rev: '6.0.0'
     hooks:
       - id: flake8
