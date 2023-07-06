@@ -11,6 +11,7 @@ nodeenv==1.8.0
 Pillow==9.5.0
 platformdirs==3.8.0
 pre-commit==3.3.3
+psycopg2-binary==2.9.6
 pycodestyle==2.10.0
 pyflakes==3.0.1
 python-dotenv==1.0.0
