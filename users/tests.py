@@ -61,13 +61,13 @@ class UserLoginViewTestCase(TestCase):
         )
         self.login_url = reverse('users:login')
 
-    def test_login_page_loads_successfully(self):
+    def test_login_page_loads_successfully(self) -> None:
         response = self.client.get(self.login_url)
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertTemplateUsed(response, 'users/login.html')
         self.assertIsInstance(response.context['form'], UserLoginForm)
 
-    def test_login_successful(self):
+    def test_login_successful(self) -> None:
         data = {
             'username': 'testuser',
             'password': 'testpassword'
@@ -75,7 +75,7 @@ class UserLoginViewTestCase(TestCase):
         response = self.client.post(self.login_url, data)
         self.assertRedirects(response, reverse('index'))
 
-    def test_login_failure(self):
+    def test_login_failure(self) -> None:
         data = {
             'username': 'testuser',
             'password': 'wrongpassword'
