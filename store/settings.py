@@ -32,6 +32,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 DOMAIN_NAME = 'http://localhost:8000'
+DOMAIN_IP_NAME = 'http://127.0.0.1:8000'
 
 # Application definition
 
@@ -196,3 +197,8 @@ SOCIALACCOUNT_PROVIDERS = {
 
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
 CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
+
+# Stripe (тут должна была быть Юкасса, но регистрация для тест режима - жесть)
+
+STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY')
+STRIPE_PRIVATE_KEY = os.getenv('STRIPE_PRIVATE_KEY')
