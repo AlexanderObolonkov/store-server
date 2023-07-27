@@ -2,11 +2,13 @@ from http import HTTPStatus
 
 import stripe
 from django.conf import settings
+from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView
+from django.views.generic.list import ListView
 
 from common.views import TitleMixin
 from orders.forms import OrderForm
@@ -47,6 +49,18 @@ class SuccessTemplateView(TitleMixin, TemplateView):
 
 class CanceledTemplateView(TitleMixin, TemplateView):
     template_name = 'orders/canceled.html'
+
+
+class OrderListView(TitleMixin, ListView):
+    template_name = 'orders/orders.html'
+    title = 'Store - Заказы'
+    queryset = Order.objects.all()
+    ordering = ('-created',)
+    context_object_name = 'orders'
+
+    def get_queryset(self) -> QuerySet:
+        queryset = super().get_queryset()
+        return queryset.filter(initiator=self.request.user)
 
 
 @csrf_exempt
