@@ -1,3 +1,5 @@
+from typing import Any
+
 import stripe
 from _decimal import Decimal
 from django.conf import settings
@@ -83,3 +85,12 @@ class Basket(models.Model):
 
     def sum(self) -> Decimal:
         return self.product.price * self.quantity
+
+    def de_json(self) -> dict[str, Any]:
+        basket_item = {
+            'product_name': self.product.name,
+            'quantity': self.quantity,
+            'price': float(self.product.price),
+            'sum': float(self.sum()),
+        }
+        return basket_item

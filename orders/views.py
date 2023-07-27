@@ -10,6 +10,7 @@ from django.views.generic.edit import CreateView
 
 from common.views import TitleMixin
 from orders.forms import OrderForm
+from orders.models import Order
 from products.models import Basket
 
 stripe.api_key = settings.STRIPE_PRIVATE_KEY
@@ -77,6 +78,6 @@ def stripe_webhook_view(request: HttpRequest) -> HttpResponse:
 
 
 def fulfill_order(session) -> None:
-    # TODO: filling, chilling
-    # order_id = int(session.metadata.order_id)
-    print("Fulfilling order")
+    order_id = int(session.metadata.order_id)
+    order = Order.objects.get(id=order_id)
+    order.update_after_payment()
