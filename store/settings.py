@@ -10,29 +10,55 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-import os
 from pathlib import Path
 
-from dotenv import load_dotenv
+import environ
 
-load_dotenv()
+env = environ.Env(
+    DEBUG=bool,
+    SECRET_KEY=str,
+    DOMAIN_NAME=str,
+    DOMAIN_IP_NAME=str,
+
+    EMAIL_HOST=str,
+    EMAIL_PORT=int,
+    EMAIL_HOST_USER=str,
+    EMAIL_HOST_PASSWORD=str,
+    EMAIL_USE_SSL=bool,
+
+    BD_NAME=str,
+    DB_USER=str,
+    DB_PASSWORD=str,
+    DB_HOST=str,
+    DB_PORT=int,
+
+    STRIPE_PUBLIC_KEY=str,
+    STRIPE_PRIVATE_KEY=str,
+    STRIPE_WEBHOOK_SECRET=str,
+
+    REDIS_HOST=str,
+    REDIS_PORT=int,
+)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Take environment variables from .env file
+environ.Env.read_env(BASE_DIR / '.env')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = ['*']
 
-DOMAIN_NAME = 'http://localhost:8000'
-DOMAIN_IP_NAME = 'http://127.0.0.1:8000'
+DOMAIN_NAME = env('DOMAIN_NAME')
+DOMAIN_IP_NAME = env('DOMAIN_IP_NAME')
 
 # Application definition
 
@@ -95,10 +121,17 @@ INTERNAL_IPS = [
     'localhost',
 ]
 
+# Redis
+
+REDIS_HOST = env('REDIS_HOST')
+REDIS_PORT = env('REDIS_PORT')
+
+# Caches
+
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6379',
+        'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}',
     }
 }
 
@@ -108,11 +141,11 @@ CACHES = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('BD_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': env('BD_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST'),
+        'PORT': env('DB_PORT'),
     }
 }
 
@@ -171,11 +204,14 @@ LOGOUT_REDIRECT_URL = '/'
 
 # Sending emails
 
-EMAIL_HOST = 'smtp.yandex.ru'
-EMAIL_PORT = 465
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-EMAIL_USE_SSL = True
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_HOST = env('EMAIL_HOST')
+    EMAIL_PORT = env('EMAIL_PORT')
+    EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+    EMAIL_USE_SSL = env('EMAIL_USE_SSL')
 
 # OAuth
 AUTHENTICATION_BACKENDS = [
@@ -195,11 +231,11 @@ SOCIALACCOUNT_PROVIDERS = {
 
 # Celery
 
-CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
-CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
+CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}'
+CELERY_RESULT_BACKEND = f'redis://{REDIS_HOST}:{REDIS_PORT}'
 
 # Stripe (тут должна была быть Юкасса, но регистрация для тест режима - жесть)
 
-STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY')
-STRIPE_PRIVATE_KEY = os.getenv('STRIPE_PRIVATE_KEY')
-STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET')
+STRIPE_PUBLIC_KEY = env('STRIPE_PUBLIC_KEY')
+STRIPE_PRIVATE_KEY = env('STRIPE_PRIVATE_KEY')
+STRIPE_WEBHOOK_SECRET = env('STRIPE_WEBHOOK_SECRET')
