@@ -9,7 +9,6 @@ venv/
 static/admin/
 static/debug_toolbar/
 static/django_extensions/
-media/
 tips.md
 db.sqlite3
 .env
