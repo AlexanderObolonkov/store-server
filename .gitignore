@@ -9,6 +9,7 @@ venv/
 static/admin/
 static/debug_toolbar/
 static/django_extensions/
+users_images/
 tips.md
 db.sqlite3
 .env
