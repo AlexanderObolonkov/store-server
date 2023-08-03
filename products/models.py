@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 import stripe
@@ -94,3 +96,16 @@ class Basket(models.Model):
             'sum': float(self.sum()),
         }
         return basket_item
+
+    @classmethod
+    def create_or_update(cls, product_id: int, user: User) -> tuple[Basket, bool]:
+        basket_item = Basket.objects.filter(user=user, product_id=product_id).first()
+
+        if not basket_item:
+            obj = Basket.objects.create(user=user, product_id=product_id, quantity=1)
+            is_created = True
+            return obj, is_created
+        basket_item.quantity += 1
+        basket_item.save()
+        is_created = False
+        return basket_item, is_created

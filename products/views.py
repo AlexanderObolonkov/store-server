@@ -36,16 +36,8 @@ class ProductsListView(TitleMixin, ListView):
 
 
 @login_required
-def basket_add(request: HttpRequest, product_id: int) -> HttpResponse:  # TODO: поменять на ManyToMany
-    product = Product.objects.get(id=product_id)
-    basket_item = Basket.objects.filter(user=request.user, product=product).first()
-
-    if not basket_item:
-        Basket.objects.create(user=request.user, product=product, quantity=1)
-    else:
-        basket_item.quantity += 1
-        basket_item.save()
-
+def basket_add(request: HttpRequest, product_id: int) -> HttpResponse:
+    Basket.create_or_update(product_id, request.user)
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 
